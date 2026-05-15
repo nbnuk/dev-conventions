@@ -17,6 +17,8 @@ This project follows shared conventions provided via the sibling
   `testing.md`, `service-layer.md`, `evolution-and-compatibility.md`).
 - **Tasks** (per-project, not shared): `docs/tasks/` — `open/`, `done/`,
   `completed.md`, and `CURRENT_HANDOFF.md` when multi-slice work is active.
+  Run `../dev-conventions/bootstrap.sh` on a new project to scaffold this
+  folder if missing.
 - **Project-specific docs** (per-project): `docs/dev-doc/`, PRDs,
   implementation plans live alongside the project, not here.
 

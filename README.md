@@ -9,9 +9,11 @@ Shared development conventions and AI agent rules
 ./dev-conventions/bootstrap.sh ./my-new-app
 ```
 
-The script creates the four symlinks and prints the `.gitignore` lines to
-add. It's idempotent and refuses to clobber existing real
-files/directories — move or remove them first.
+The script creates the four symlinks, scaffolds `docs/tasks/` when missing
+(files are copied into the project and should be committed there), and
+prints the `.gitignore` lines to add. It's idempotent: re-running leaves
+existing symlinks and task files alone; only missing scaffold files are
+added under `docs/tasks/`.
 
 
 ## Further Info:
@@ -26,6 +28,8 @@ files/directories — move or remove them first.
   and from in-repo code/docs (e.g. `docs/conventions/testing.md`).
 - **`AGENTS.md`** — generic orientation surfaced to Cursor / Codex / Claude
   / etc. via a symlink at each project root.
+- **`scaffold/docs/tasks/`** — starter task tracker files copied into each
+  project by `bootstrap.sh` (committed per project, not symlinked).
 
 ## How projects use this
 
@@ -60,7 +64,8 @@ because it reads through the symlink — no per-app sync needed.
 ## What stays in each project
 
 - `docs/tasks/` (open/done/handoffs/CURRENT_HANDOFF.md) — task tracking is
-  per-project.
+  per-project. `bootstrap.sh` copies the initial layout from
+  `dev-conventions/scaffold/docs/tasks/` when the folder does not exist yet.
 - `docs/dev-doc/`, PRDs, implementation plans — project-specific design docs.
 - `AGENTS.md` (if present) at the project root — project-specific agent
   guidance can layer on top of the shared rules here.

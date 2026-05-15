@@ -62,9 +62,36 @@ for entry in "${links[@]}"; do
   echo "  link $link_rel -> $target_rel"
 done
 
+# docs/tasks/ — per-project task tracker (required by agent rules; committed in each repo)
+scaffold_tasks="$conventions_dir/scaffold/docs/tasks"
+project_tasks="$project_dir/docs/tasks"
+
+if [[ ! -d "$scaffold_tasks" ]]; then
+  echo "error: missing scaffold at $scaffold_tasks" >&2
+  exit 1
+fi
+
+if [[ ! -d "$project_tasks" ]]; then
+  mkdir -p "$(dirname "$project_tasks")"
+  cp -R "$scaffold_tasks" "$project_tasks"
+  echo "  scaffold docs/tasks/ (new)"
+else
+  while IFS= read -r -d '' item; do
+    rel="${item#"$scaffold_tasks"/}"
+    dest="$project_tasks/$rel"
+    if [[ ! -e "$dest" ]]; then
+      mkdir -p "$(dirname "$dest")"
+      cp -R "$item" "$dest"
+      echo "  add    docs/tasks/$rel"
+    fi
+  done < <(find "$scaffold_tasks" -mindepth 1 -print0)
+fi
+
 echo
 echo "Done. Add these to $project_dir/.gitignore if not already present:"
 echo "  /AGENTS.md"
 echo "  /.cursor/rules"
 echo "  /.cursor/skills"
 echo "  /docs/conventions"
+echo
+echo "Commit docs/tasks/ in the project repo (it is not symlinked)."
