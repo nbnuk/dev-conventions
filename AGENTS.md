@@ -11,9 +11,9 @@ This project follows shared conventions provided via the sibling
 
 ## Where to look
 
-- **Rules**: `.cursor/rules/` covers testing, service layer, multitenancy,
-  HTMX patterns, TDD design-review loop, and more. Each `.mdc` file's
-  frontmatter controls when it applies.
+- **Rules**: `.cursor/rules/` covers simple linear code, readable formatting,
+  testing, service layer, multitenancy, HTMX patterns, the TDD design-review
+  loop, and more. Each `.mdc` file's frontmatter controls when it applies.
 - **Conventions**: `docs/conventions/` for long-form details (e.g.
   `testing.md`, `service-layer.md`, `multitenancy.md`,
   `evolution-and-compatibility.md`).
