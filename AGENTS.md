@@ -27,6 +27,28 @@ This project follows shared conventions provided via the sibling
   user points at them; they are not always-on coding rules. See the app's
   `docs/README.md` when present.
 
+## Mandatory convention loading
+
+Cursor loads `.cursor/rules/*.mdc` automatically. Other coding agents must
+load the same guidance themselves rather than treating the rule directory as
+optional background reading.
+
+Before planning or changing application code:
+
+1. List `.cursor/rules/*.mdc` and read every rule whose `alwaysApply` value is
+   `true`, plus rules without targeting frontmatter.
+2. Read every conditional rule whose description or glob applies to the files
+   or behaviour in scope.
+3. Read any convention document directly referenced by those rules.
+4. Inspect at least one comparable feature already implemented in the
+   application and use it as the structural example.
+5. In the implementation plan or first work update, identify the applicable
+   conventions and the comparable feature. Call out any intentional departure.
+
+For a small, isolated edit, load only the rules relevant to that edit. For a
+non-trivial or multi-file implementation, perform the full applicable-rule
+review before writing code.
+
 ## Editing rules vs. project code
 
 - Project code → edit in this repo.

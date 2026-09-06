@@ -27,8 +27,9 @@ missing scaffold files are added under `docs/tasks/`.
 - **`docs/conventions/`** — long-form prose conventions referenced from rules
   and from in-repo code/docs (e.g. `docs/conventions/testing.md`,
   `multitenancy.md`).
-- **`AGENTS.md`** — generic orientation surfaced to Cursor / Codex / Claude
-  / etc. via a symlink at each project root.
+- **`AGENTS.md`** — shared agent orientation and mandatory convention-loading
+  instructions. It is exposed under the native entry-point name used by each
+  supported coding agent.
 - **`scaffold/docs/tasks/`** — starter task tracker files copied into each
   project by `bootstrap.sh` (committed per project, not symlinked).
 
@@ -52,6 +53,7 @@ GRAILS/
 Each project gets the shared content via **relative symlinks** at:
 
 - `<project>/AGENTS.md            -> ../dev-conventions/AGENTS.md`
+- `<project>/CLAUDE.md            -> ../dev-conventions/AGENTS.md`
 - `<project>/.cursor/rules        -> ../../dev-conventions/cursor/rules`
 - `<project>/.cursor/skills       -> ../../dev-conventions/skills`
 - `<project>/.agents/skills       -> ../../dev-conventions/skills`
@@ -73,8 +75,9 @@ because it reads through the symlink — no per-app sync needed.
   per-project. `bootstrap.sh` copies the initial layout from
   `dev-conventions/scaffold/docs/tasks/` when the folder does not exist yet.
 - `docs/dev-doc/`, PRDs, implementation plans — project-specific design docs.
-- `AGENTS.md` (if present) at the project root — project-specific agent
-  guidance can layer on top of the shared rules here.
+- More specific agent instruction files below the project root can add
+  project- or directory-specific guidance where the coding agent supports
+  hierarchical instructions.
 
 ## If you ever need to go fully self-contained
 
