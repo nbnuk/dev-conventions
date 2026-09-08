@@ -1,17 +1,29 @@
 ---
 name: implement-jira-review-findings
 description: >-
-  Implement Jira issues produced by a branch review, using a separate
-  implementation agent and an independent primary-agent review on the current
-  feature branch. Use when the user asks to fix, address, or work through Jira
-  review findings; not for creating tickets or implementing an unrelated issue.
+  Implement an explicit set of Jira issues produced by a branch review on the
+  current feature branch, normally in the current task with per-issue review,
+  tests, and commits. Use when the user asks to fix, address, or work through
+  Jira review findings; not for creating tickets or implementing an unrelated
+  issue.
 ---
 
 # Implement Jira review findings
 
-Resolve reviewed Jira findings on the user's current feature branch while
-keeping implementation and acceptance review independent. The user retains
-control of pushing and merging.
+Resolve reviewed Jira findings on the user's current feature branch with a
+proportionate implementation and acceptance workflow. The user retains control
+of pushing and merging.
+
+Invoke the skill with the Jira keys to implement, for example:
+
+```text
+$implement-jira-review-findings AI-3, AI-4, AI-5
+```
+
+Treat only the supplied keys as authorized work. Accept commas, spaces, or an
+inclusive range such as `AI-3 through AI-5`; normalize them to an ordered,
+deduplicated list before starting. If no keys are supplied, ask for them rather
+than selecting issues from the Jira backlog.
 
 ## Establish the work set
 
@@ -30,13 +42,26 @@ control of pushing and merging.
 - Report the proposed order and any overlap. Use one implementation stream when
   issues touch the same code or schema.
 
-## Separate implementation from review
+## Choose a proportionate execution mode
 
-When agent delegation is available and the user has invoked this skill, assign
-implementation to one non-root agent at a time. The primary agent remains the
-reviewer and must not make concurrent edits to the same worktree.
+Implement straightforward findings directly in the current task. This is the
+default: it avoids delegation overhead while preserving per-issue validation,
+tests, diff review, and commits.
 
-Give the implementation agent one bounded Jira issue with:
+Use a separate implementation agent only when:
+
+- the user requests delegated or independent implementation;
+- the change is unusually broad, security-critical, migration-heavy, or has
+  enough interacting behavior that independent implementation materially
+  improves confidence; or
+- a bounded research or verification subtask can run independently and will
+  save meaningful time.
+
+Briefly state when delegation is being used and why. Do not delegate routine,
+localized findings merely because delegation is available. The primary agent
+must not make concurrent edits to the same worktree as an implementation agent.
+
+When delegating implementation, give the agent one bounded Jira issue with:
 
 - the issue key and current Jira description;
 - repository, current branch, and base branch;
@@ -46,27 +71,24 @@ Give the implementation agent one bounded Jira issue with:
 - authority to edit only what that issue reasonably requires;
 - no authority to push, merge, or mutate Jira.
 
-Reuse the same implementation agent for review corrections when practical.
-Do not run overlapping issue implementations concurrently in a shared
-worktree. Independent agents may be used sequentially when fresh context is
-materially useful.
+Reuse the same implementation agent for review corrections when practical. Do
+not run overlapping issue implementations concurrently in a shared worktree.
 
 ## Per-issue acceptance loop
 
 For each valid issue:
 
 1. Establish the pre-change state and isolate unrelated user changes.
-2. Have the implementation agent follow the repository's test-first, task-file,
-   migration, and design-review conventions. Do not weaken production behavior
-   to make a test pass.
-3. After implementation stops, independently inspect the actual diff and
-   relevant surrounding code. Do not accept the agent's summary as evidence.
+2. Follow the repository's test-first, task-file, migration, and design-review
+   conventions. Do not weaken production behavior to make a test pass.
+3. Inspect the actual diff and relevant surrounding code after implementation.
+   When an agent was used, do not accept its summary as evidence.
 4. Check the Jira acceptance criteria, regression risk, authorization,
    concurrency and transaction boundaries, schema compatibility, performance,
    and consistency with comparable project code to the degree relevant.
-5. Run or independently confirm proportionate focused tests. If review finds a
-   defect, give the same agent concrete evidence and repeat implementation,
-   review, and verification until accepted or genuinely blocked.
+5. Run proportionate focused tests. If review finds a defect, correct it in the
+   current task, or give the delegated agent concrete evidence, then repeat
+   review and verification until accepted or genuinely blocked.
 6. Ensure task/handoff records required by the repository are current.
 7. Commit the accepted issue separately when repository conventions require
    commits or the user requested them. Include the Jira key in the commit
@@ -104,5 +126,5 @@ After all accepted issues are implemented:
 - leave the branch unpushed and unmerged for the user unless they explicitly
   request otherwise.
 
-Completion means the implementation and independent review both pass; a green
-implementation-agent test run alone is not sufficient.
+Completion means implementation, diff review, and verification all pass. When
+an implementation agent was used, its green test run alone is not sufficient.

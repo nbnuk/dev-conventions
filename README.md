@@ -61,10 +61,13 @@ $implement-jira-review-findings AI-1, AI-2, AI-3
 ```
 
 Supply issue keys explicitly so the skill does not infer authorization from the
-whole Jira backlog. It revalidates each finding, gives one issue at a time to an
-implementation agent, independently reviews each fix, runs the repository's
-required tests, and leaves pushing and merging to the human. Add an override
-only when the repository context is not sufficient, for example:
+whole Jira backlog. It revalidates and implements each finding in sequence,
+reviews each resulting diff, runs the required tests, and creates a separate
+commit per accepted issue. Straightforward fixes are made directly in the
+current task; a separate implementation agent is reserved for unusually broad
+or high-risk work, or when explicitly requested. Pushing and merging remain
+with the human. Add an override only when the repository context is not
+sufficient, for example:
 
 ```text
 $implement-jira-review-findings AI-12, AI-14 base: release/2.0
