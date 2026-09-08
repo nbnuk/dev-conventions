@@ -37,6 +37,46 @@ Human-facing product docs (`user-guide`, `technical-design`, `operations`)
 live **in each app**, not in this repo, and are not part of the conventions
 symlink.
 
+## Branch review and Jira workflow
+
+In Codex, type `$` in the message box and select a skill from the autocomplete
+list. Add the repository-specific instruction after the selected skill.
+
+Review the current feature branch against its integration branch, then draft
+deduplicated Jira issues from confirmed findings:
+
+```text
+$review-branch-to-jira Review the current branch against develop and draft Jira issues in project AI
+```
+
+The skill records the reviewed branch and commit, checks for likely duplicate
+issues, and shows the proposed issue set before creating anything in Jira.
+Approve the displayed set when ready.
+
+Implement an explicit set of Jira review findings on the current feature
+branch:
+
+```text
+$implement-jira-review-findings AI-1, AI-2, AI-3
+```
+
+Supply issue keys explicitly so the skill does not infer authorization from the
+whole Jira backlog. It revalidates each finding, gives one issue at a time to an
+implementation agent, independently reviews each fix, runs the repository's
+required tests, and leaves pushing and merging to the human. Add an override
+only when the repository context is not sufficient, for example:
+
+```text
+$implement-jira-review-findings AI-12, AI-14 base: release/2.0
+```
+
+The two skills are deliberately separate, providing a review and approval
+point between ticket creation and code changes:
+
+```text
+review branch -> inspect and approve Jira drafts -> implement selected issues -> human merges
+```
+
 ## How projects use this
 
 This repo is **not** a dependency in any build sense. Each app expects to find
