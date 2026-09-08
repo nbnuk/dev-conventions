@@ -25,6 +25,10 @@ inclusive range such as `AI-3 through AI-5`; normalize them to an ordered,
 deduplicated list before starting. If no keys are supplied, ask for them rather
 than selecting issues from the Jira backlog.
 
+Invocation with explicit keys also authorizes the two routine workflow
+transitions described below for those keys only. It does not authorize Jira
+comments, edits, assignments, worklogs, links, or any other mutation.
+
 ## Establish the work set
 
 - Confirm the repository, current feature branch, base branch, and Jira issue
@@ -79,20 +83,30 @@ not run overlapping issue implementations concurrently in a shared worktree.
 For each valid issue:
 
 1. Establish the pre-change state and isolate unrelated user changes.
-2. Follow the repository's test-first, task-file, migration, and design-review
+2. Immediately before implementation, move the issue to `In Progress` when
+   that transition is available. Do not move an issue backwards from a later
+   status.
+3. Follow the repository's test-first, task-file, migration, and design-review
    conventions. Do not weaken production behavior to make a test pass.
-3. Inspect the actual diff and relevant surrounding code after implementation.
+4. Inspect the actual diff and relevant surrounding code after implementation.
    When an agent was used, do not accept its summary as evidence.
-4. Check the Jira acceptance criteria, regression risk, authorization,
+5. Check the Jira acceptance criteria, regression risk, authorization,
    concurrency and transaction boundaries, schema compatibility, performance,
    and consistency with comparable project code to the degree relevant.
-5. Run proportionate focused tests. If review finds a defect, correct it in the
+6. Run proportionate focused tests. If review finds a defect, correct it in the
    current task, or give the delegated agent concrete evidence, then repeat
    review and verification until accepted or genuinely blocked.
-6. Ensure task/handoff records required by the repository are current.
-7. Commit the accepted issue separately when repository conventions require
+7. Ensure task/handoff records required by the repository are current.
+8. Commit the accepted issue separately when repository conventions require
    commits or the user requested them. Include the Jira key in the commit
    subject. Do not include unrelated work.
+9. After the implementation, review, tests, and commit have all passed, move
+   the issue to `Review` when that transition is available.
+
+Jira status transitions are best-effort and must not make code work fragile or
+slow. Discover the issue's available transitions, use an exact matching status
+when present, and make at most one transition attempt per intended status. If a
+transition is unavailable or fails, continue the code workflow and report it.
 
 Do not begin a dependent issue until its prerequisite is accepted. It is fine
 to continue to the next independent issue after acceptance without asking for
@@ -100,9 +114,9 @@ another confirmation when the user authorized the whole displayed work set.
 
 ## Jira and repository boundaries
 
-- Reading Jira issues does not authorize comments, edits, assignments,
-  transitions, worklogs, or links. Perform those mutations only when the user
-  explicitly requests them.
+- Invocation authorizes only the selected issues' `In Progress` and `Review`
+  transitions. Comments, edits, assignments, worklogs, links, other
+  transitions, or mutations to other issues still require explicit permission.
 - Code-fix authorization does not authorize pushing, opening or merging a pull
   request, deleting branches, or rewriting history.
 - Work on the current feature branch unless the user asks for another branch or
@@ -121,8 +135,7 @@ After all accepted issues are implemented:
   interactions between fixes;
 - confirm every issue as fixed, invalid, already fixed, or blocked, with
   evidence;
-- report commits, tests, remaining risks, and any Jira updates still requiring
-  authorization;
+- report commits, tests, remaining risks, and the outcome of Jira transitions;
 - leave the branch unpushed and unmerged for the user unless they explicitly
   request otherwise.
 

@@ -66,8 +66,10 @@ reviews each resulting diff, runs the required tests, and creates a separate
 commit per accepted issue. Straightforward fixes are made directly in the
 current task; a separate implementation agent is reserved for unusually broad
 or high-risk work, or when explicitly requested. Pushing and merging remain
-with the human. Add an override only when the repository context is not
-sufficient, for example:
+with the human. Each selected ticket moves to **In Progress** when its work
+starts and to **Review** after its implementation, tests, review, and commit
+pass, when those Jira workflow transitions are available. Add an override only
+when the repository context is not sufficient, for example:
 
 ```text
 $implement-jira-review-findings AI-12, AI-14 base: release/2.0
