@@ -37,6 +37,15 @@ Human-facing product docs (`user-guide`, `technical-design`, `operations`)
 live **in each app**, not in this repo, and are not part of the conventions
 symlink.
 
+## Application deployment automation
+
+The shared deployment pattern is documented in
+`docs/conventions/application-deployment-automation.md`. It favors
+version-controlled Bash/Python scripts, thin Rundeck jobs, immutable artifact
+and image identity, explicit dry-run/debug behavior, and real QA integration
+over local cloud mocks. The `automate-application-deployment` skill applies the
+pattern to end-to-end deployment automation tasks.
+
 ## Branch review and Jira workflow
 
 In Codex, type `$` in the message box and select a skill from the autocomplete
