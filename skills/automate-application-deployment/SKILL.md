@@ -41,6 +41,9 @@ when it is available.
 ## Verify proportionately
 
 Run cheap syntax, rendered-configuration, parser, and dry-run checks locally.
+When the project uses Ansible, run `ansible-lint` and
+`ansible-playbook --syntax-check` on changed playbooks and roles before other
+verification steps.
 Use the real QA registry and QA host as the integration environment unless the
 user explicitly needs a separate test platform. Expect early Rundeck runs to
 be part of establishing the job; make failures diagnosable and retries safe.

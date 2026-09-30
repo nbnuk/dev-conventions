@@ -1,6 +1,6 @@
 ---
 description: Pragmatic application deployment automation using versioned scripts and thin job-runner wrappers
-globs: Dockerfile,**/Dockerfile,**/docker-compose*.yml,**/docker-compose*.yaml,**/compose*.yml,**/compose*.yaml,**/deployment/**,**/rundeck/**,**/scripts/*.sh
+globs: Dockerfile,**/Dockerfile,**/docker-compose*.yml,**/docker-compose*.yaml,**/compose*.yml,**/compose*.yaml,**/deployment/**,**/rundeck/**,**/scripts/*.sh,**/ansible/**
 alwaysApply: false
 ---
 
@@ -19,3 +19,7 @@ For mutable actions, support a useful dry-run where practical and deliberate
 non-secret debug logging. Do not use global shell tracing in scripts that can
 access credentials. Test cheap behavior locally, then use the real QA
 environment for integration rather than building cloud mocks by default.
+
+Where a project already uses Ansible, run `ansible-lint` and
+`ansible-playbook --syntax-check` on changed playbooks and roles as part of
+that local verification.

@@ -73,7 +73,9 @@ failure.
 
 Use the smallest progression that gives useful confidence:
 
-1. Run syntax, formatting, configuration-rendering, and dry-run checks locally.
+1. Run syntax, formatting, configuration-rendering, and dry-run checks
+   locally. Where a project already uses Ansible, this includes `ansible-lint`
+   and `ansible-playbook --syntax-check` on changed playbooks and roles.
 2. Run individual scripts directly where practical.
 3. Invoke the same scripts through Rundeck with dry-run enabled.
 4. Execute against the real QA registry and QA host.
