@@ -1,5 +1,5 @@
 ---
-name: implement-jira-review-findings
+name: nbn-implement-jira-review-findings
 description: >-
   Implement an explicit set of Jira issues produced by a branch review on the
   current feature branch, normally in the current task with per-issue review,
@@ -17,7 +17,7 @@ of pushing and merging.
 Invoke the skill with the Jira keys to implement, for example:
 
 ```text
-$implement-jira-review-findings AI-3, AI-4, AI-5
+$nbn-implement-jira-review-findings AI-3, AI-4, AI-5
 ```
 
 Treat only the supplied keys as authorized work. Accept commas, spaces, or an

@@ -1,5 +1,5 @@
 ---
-name: automate-application-deployment
+name: nbn-automate-application-deployment
 description: >-
   Design or implement pragmatic application deployment automation using
   version-controlled scripts and thin Rundeck jobs. Use for Docker image builds,

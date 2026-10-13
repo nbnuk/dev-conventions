@@ -1,5 +1,5 @@
 ---
-name: review-branch-to-jira
+name: nbn-review-branch-to-jira
 description: >-
   Review a code branch against a base branch and turn confirmed, actionable
   findings into deduplicated Jira issues. Use when the user asks to review a
