@@ -12,11 +12,6 @@ defences, meaningful names) stay as agent rules.
 | Grails (nbn-recorder-grails, nbn-components-plugin) | Spotless: import order and whitespace only | CodeNarc | `config/codenarc/codenarc.groovy` |
 
 Repos of the same type keep **identical** ruleset files. Change them together.
-`lintConfigConsistency` (part of `check`) compares `config/codenarc/`,
-`config/pmd/`, `config/spotbugs/`, and the Gradle consistency script with the
-checked-out sibling of the same type. It rejects changed, missing, or extra
-files. Standalone checkouts explicitly skip the comparison when the sibling
-is absent; their local lint and tests still run.
 
 Reports are written to `build/reports/pmd/`, `build/reports/spotbugs/` and
 `build/reports/codenarc/`.
@@ -57,7 +52,6 @@ of that type instead of suppressing it repeatedly. Do this only with agreement.
 | `command-request-adapters` | `GrailsMassAssignment`; `ServiceHttpDependency` rejects explicit HTTP request/response types in services | validation, DTO shape, and whether a Map is request-shaped |
 | domain declarations | `GrailsDuplicateConstraint`, `GrailsDuplicateMapping`, `GrailsDomainWithServiceReference` | domain modelling |
 | `multitenancy` | `TenantBoundary` flags known bypass calls and annotations in web controllers/services; `WebLayerJdbc` flags direct JDBC dependencies there | query correctness, authentication, relationships, filesystem isolation, indirect/dynamic access |
-| machine-readable Java text | `UseLocaleWithCaseConversions` requires an explicit locale | choose `Locale.ROOT` for identifiers, a user locale for display text |
 | `simple-linear-code` | `CognitiveComplexity` (PMD), `NestedBlockDepth` (CodeNarc) as a backstop | when to extract a method |
 
 `NPathComplexity` is deliberately not used: it penalises flat lists of guard
