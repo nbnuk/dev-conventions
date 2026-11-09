@@ -68,7 +68,9 @@ Checkbox rules:
 4. Perform service/domain work.
 5. If a deliberate service result reports user-correctable failures, render the
    form with `cmd` and `result`.
-6. On success, set flash success and redirect, or return the success fragment.
+6. On success, set `flash.toast` and redirect, or return the success fragment. See
+   [HTMX patterns: success feedback](../app-design/htmx-patterns.md) for toasts
+   versus page alerts.
 
 Expected, user-correctable form problems should be represented on the command
 object before the create/update service call. For local checks, use command
@@ -102,7 +104,7 @@ def saveThing(CreateThingCommand cmd) {
         return
     }
 
-    flash.message = 'Thing created.'
+    flash.toast = 'Thing created.'
     redirect action: 'index'
 }
 ```
