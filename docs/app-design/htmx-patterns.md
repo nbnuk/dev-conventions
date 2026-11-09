@@ -74,18 +74,36 @@ document.body.addEventListener('userSaved', function (evt) {
 });
 ```
 
-### 5) Toasts from events and HTMX errors
+### 5) Success feedback: toasts for confirmations, alerts for what the user must keep
 
-For success, listen to domain events and show toasts.
+Choose by what the message is for, not by how the request was made. Users can't
+see whether a page used HTMX, so the same kind of message must look the same.
 
-```js
-document.body.addEventListener('userSaved', function (evt) {
-  const d = evt.detail;
-  if (d && d.message && window.showSuccessToast) {
-    window.showSuccessToast(d.message);
-  }
-});
-```
+- **Confirmations** ("Person created", "Changes saved", "3 people deleted",
+  "Import discarded") are always a **success toast**.
+- **Messages the user must read, keep or act on** are a **page alert**, because
+  a toast disappears after a few seconds. Examples: a temporary password, "This
+  reset link is invalid or has expired", "Choose the file encoding and separator
+  before continuing".
+
+`<components:toast/>` (nbn-components-plugin) shows a confirmation from either
+route, with no page code:
+
+- **HTMX response:** put `message` on the domain event.
+
+  ```groovy
+  response.setHeader('HX-Trigger', JsonOutput.toJson([userSaved: [message: 'User saved.']]))
+  render ''
+  ```
+
+- **Full-page post that redirects (PRG):** set `flash.toast`; the next page shows it.
+
+  ```groovy
+  flash.toast = "Person “${person.displayName}” created."
+  redirect action: 'people'
+  ```
+
+Use `flash.message` (success style) and `flash.error` only for page alerts.
 
 For server failures on HTMX requests, handle `htmx:responseError` once in layout.
 
@@ -106,9 +124,9 @@ document.body.addEventListener('htmx:responseError', function (event) {
 
 ## Controller response rule of thumb
 
-- HTMX success: `HX-Trigger` + `render ''`
+- HTMX success: `HX-Trigger` (with `message` for a confirmation) + `render ''`
 - HTMX validation error: rerender fragment with errors
-- Non-HTMX success: `flash.message` + redirect (PRG)
+- Non-HTMX success: `flash.toast` + redirect (PRG); `flash.message` only when the user must keep or act on the message
 
 ## What to avoid
 
@@ -116,3 +134,4 @@ document.body.addEventListener('htmx:responseError', function (event) {
 - Mixing many one-off event names for the same domain action
 - Building `HX-Trigger` JSON by string concatenation
 - Using flash messages as the primary HTMX feedback channel
+- A page alert for a plain confirmation, or a toast for something the user must keep or act on

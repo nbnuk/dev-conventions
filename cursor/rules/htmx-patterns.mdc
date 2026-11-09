@@ -12,10 +12,10 @@ When implementing HTMX flows in this repo, use these defaults:
 3. **List refresh pattern:** keep lists/tables in a container that refetches with `hx-get` and `hx-trigger="<event> from:body"`; render an initial partial server-side.
 4. **Validation path:** on invalid HTMX POST, rerender the same form fragment with command errors; do not redirect.
 5. **JSON safety:** build `HX-Trigger` payloads with `JsonOutput.toJson(...)`; never hand-build JSON header strings.
-6. **Toasts and errors:** success toasts come from domain events; `htmx:responseError` should be handled centrally in layout, parsing JSON only when response `Content-Type` is JSON and otherwise falling back to status text.
+6. **Toasts and errors:** a confirmation is always a success toast, a message the user must keep or act on is a page alert (`docs/app-design/htmx-patterns.md` §5). HTMX: `message` on the domain event; redirect: `flash.toast`. `<components:toast/>` shows both. `htmx:responseError` should be handled centrally in layout, parsing JSON only when response `Content-Type` is JSON and otherwise falling back to status text.
 7. **Fragment state (paging/sort):** hidden inputs at scope levels (`#<id>-state`, `[data-role="carry-through-state-params"]`, action `[data-role]` wrappers) + `hx-include`; see `docs/conventions/htmx-fragment-state.md` (example: `nbn-components-plugin/grails-app/views/simpleDataTable/_table.gsp`).
 
 Rule of thumb:
 - HTMX success: `HX-Trigger` + empty body
 - HTMX validation failure: rerender fragment
-- Non-HTMX success: PRG (`flash` + redirect)
+- Non-HTMX success: PRG (`flash.toast` + redirect; `flash.message` only for a message to keep or act on)

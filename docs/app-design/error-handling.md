@@ -154,24 +154,33 @@ redirect(action: 'create')
 </g:if>
 ```
 
-Use `flash.message` for success confirmations, `flash.error` for failures.
+Use `flash.error` for failures. A plain success confirmation is a toast, not an
+alert: set `flash.toast` and `<components:toast/>` shows it on the next page. Keep
+`flash.message` for a success the user must read, keep or act on, such as a
+temporary password. See [HTMX patterns: success feedback](htmx-patterns.md).
 
 This is the Post-Redirect-Get pattern. Always redirect after a successful POST.
 
 ### Tier 3 — HTMX partial requests → toast via HX-Trigger
 
-For HTMX requests, the server sets an `HX-Trigger` response header with a JSON payload. The existing `toast.js` system listens for these events and displays the appropriate toast notification.
+For HTMX requests, `<components:toast/>` (nbn-components-plugin) shows the toasts.
 
-```groovy
-// In controller action handling an HTMX request
-response.setHeader('HX-Trigger', '{"showErrorToast": "Something went wrong."}')
-render(status: 422)
-```
+- **Failure:** return an error status. The toast script handles `htmx:responseError`
+  and shows the JSON `error` (or `message`) when the response is JSON, otherwise the
+  status line.
 
-```groovy
-// Success
-response.setHeader('HX-Trigger', '{"showSuccessToast": "User created successfully."}')
-```
+  ```groovy
+  response.status = 422
+  render contentType: 'application/json', text: JsonOutput.toJson([error: 'Something went wrong.'])
+  ```
+
+- **Success:** put `message` on the domain event in `HX-Trigger`. Build it with
+  `JsonOutput.toJson`, never by hand.
+
+  ```groovy
+  response.setHeader('HX-Trigger', JsonOutput.toJson([userSaved: [message: 'User created.']]))
+  render ''
+  ```
 
 The frontend `toast.js` listens for `showSuccessToast`, `showErrorToast`, `showWarningToast`, and `showInfoToast` events on the document.
 
