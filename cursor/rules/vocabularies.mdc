@@ -1,0 +1,16 @@
+---
+description: User-defined sets of values (statuses, tags) are owned vocabularies of terms
+globs: grails-app/domain/**/*.groovy,grails-app/migrations/**/*.groovy
+alwaysApply: false
+---
+
+# Vocabularies
+
+When users define their own set of values for something (statuses on a list, tags), follow **`docs/conventions/vocabularies.md`**:
+
+1. The vocabulary belongs to one owner record: domain `<Owner>Term`, table `<owner_table>_term`, owner's `terms`, and `term` / `term_id` on the record that uses one. No shared global vocabulary table.
+2. Columns `label` (unique per owner ignoring case), `description`, `sort_order`; records reference the term id.
+3. A term in use cannot be deleted; a composite foreign key keeps a record's term within its own owner.
+4. Manage terms with the plugin's `<components:termeditor/>` inside the owner's form; validate rows with `TermEditorRow.validate(...)`.
+
+In code say vocabulary and term; on screen use the owner's word ("Statuses").
