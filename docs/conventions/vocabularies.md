@@ -63,6 +63,27 @@ order shown, and the owner's service saves the set with the owner.
 - The host passes each term's usage count and the words to use ("status",
   "species").
 
-Choosing a term for a record (a dropdown, or a picker that can add a term on
-the spot) belongs to the owning screen for now. Extract a shared term picker
-when a second vocabulary needs one.
+## Choosing a term as you act on a record
+
+When a screen acts on many rows and each needs one term (adding species to a
+designation list with a status), use the components plugin's **single term
+picker**. It is server-rendered and HTMX-driven; its script only shows, places
+and closes the popup.
+
+- `<components:singletermpicker id=…/>` once on the page: the shared popup.
+- `<components:singletermpickerAction …/>` on each row: "Add as {term}" with the
+  default term, and a toggle that GETs the row's choices into the popup.
+- The host's options endpoint renders `<components:singletermpickerOptions …/>`
+  with the vocabulary as it is now, so a term created from one row is offered
+  on the next.
+- A pick POSTs the row's values with `termId`, or `termLabel` for a typed term.
+  The host finds a typed label ignoring case, else creates it in the same
+  transaction as the record.
+- The host remembers the default term (the last one picked, e.g. in the
+  session). When a pick changes it, the response appends
+  `<components:singletermpickerDefault …/>`, an out-of-band swap that redraws
+  every row's main button.
+
+Changing one record's term in a table can stay a plain `<select>` of the terms.
+Choosing several terms (tags) will be a separate multi term picker rather than
+an option on this one, even if some markup is repeated, to keep each simple.
