@@ -7,6 +7,7 @@ alwaysApply: true
 
 When implementing HTMX flows in this repo, use these defaults:
 
+0. **HTMX-driven first, script last:** this applies to screens and plugin components alike, from the first draft. The server renders the data as HTML. Requests are `hx-*` attributes, never `fetch`. Updates elsewhere on the page are out-of-band swaps or `HX-Trigger` refetches, never JSON or data-carrying events for a script to apply. Script is only for what HTMX can't do (positioning, focus, keyboard, closing on a click outside). Show or focus swapped content on `htmx:afterSettle`, not `afterSwap`. See `docs/app-design/htmx-patterns.md` § Principle.
 1. **Server-driven success:** for HTMX success responses, prefer `HX-Trigger` JSON + `render ''` over `HX-Redirect` when a local fragment refresh is sufficient.
 2. **Domain event naming:** use one stable domain event per action (for example `fieldDefinitionSaved`) and reuse it across standalone pages and modal/wizard contexts.
 3. **List refresh pattern:** keep lists/tables in a container that refetches with `hx-get` and `hx-trigger="<event> from:body"`; render an initial partial server-side.
