@@ -7,45 +7,62 @@ the owner's own word ("Statuses", "Tags"), never "vocabulary" or "term".
 
 A fixed set that only developers change is an `enum`, not a vocabulary.
 
-## Owned vocabularies
+## Tenant vocabularies
 
-A vocabulary belongs to one **owner** record and is created, edited and
-deleted with it. There is no shared global vocabulary table: each owner has its
-own term table, and every owner follows the same names and shape. A shared
-vocabulary table pays off only when several owners share one set of values;
-add one then, not before.
+Every vocabulary is a row in one tenant table, `vocab`, and its terms are rows
+in `vocab_term`. Owners point at a vocabulary; the vocabulary does not record
+its owner. One editor, picker, filter source and admin screen then serve every
+vocabulary, and a vocabulary can later be shared by several owners (two lists
+with the same statuses, one Stage vocabulary for all occurrences).
 
-### Names
+| Table | Domain | Columns |
+|---|---|---|
+| `vocab` | `Vocab` | `tenant_id`, `kind`, `name` (+ `id`, `version`, dates) |
+| `vocab_term` | `VocabTerm` | `tenant_id`, `vocab_id`, `label`, `description`, `sort_order` (+ `id`, `version`, dates) |
+
+- `kind` is a `VocabKind` enum value (`SPECIES_LIST_STATUS`, …) saying what the
+  vocabulary is for, so a screen offers only vocabularies of its kind. Add a
+  kind when a new kind of owner gets user-defined values.
+- `name` is what a person sees when choosing or managing vocabularies. A
+  vocabulary created for one owner takes the owner's name and is renamed with it.
+- `label` is required, at most 255 characters, and unique per vocabulary
+  ignoring case (a unique index on `(vocab_id, lower(label))`, which also serves
+  "the vocabulary's terms").
+- `description` is optional text.
+- `sort_order` is the order the user gave the terms. It starts as the order they
+  were added; screens list terms, and sort by term, in this order.
+- Both tables carry `tenant_id` and are `MultiTenant`.
+
+### Owners and records
 
 | Piece | Rule | Example |
 |---|---|---|
-| Term domain class | `<Owner>Term` | `TenantSpeciesListTerm` |
-| Table | `<owner_table>_term` | `tenant_species_list_term` |
-| Owner's terms | `terms` | `TenantSpeciesList.terms` |
-| Record that uses a term | property `term`, column `term_id` | `TenantSpeciesListItem.term` |
+| Owner → vocabulary | property `vocab`, column `vocab_id` (null when the owner has none) | `TenantSpeciesList.vocab` |
+| Owner's terms, in order | a transient `getTerms()` reading `vocab.terms` | `TenantSpeciesList.terms` |
+| Record with one term | property `term`, column `vocab_term_id`, indexed | `TenantSpeciesListItem.term` |
+| Record with several single-term fields | property `<field>Term`, column `<field>_vocab_term_id` | `Occurrence.stageTerm` (later) |
+| Record with several terms (tags) | a join table (record id, `vocab_term_id`), indexed on the term | (later) |
 
-### Columns
-
-- `label` — required, at most 255 characters, unique per owner ignoring case
-  (a unique index on `(<owner>_id, lower(label))`).
-- `description` — optional text.
-- `sort_order` — the order the user gave the terms. It starts as the order they
-  were added; screens list terms, and sort by term, in this order.
-- Tenant-owned terms carry `tenant_id` and are `MultiTenant`, like their owner.
+The service creates the owner's vocabulary when it first needs one (with the
+owner, or with its first term).
 
 ### Rules
 
 - **Records point at the term's id**, never copy its label. Renaming a term
   changes it everywhere at once.
 - **A term in use cannot be deleted.** Screens show how many records use each
-  term and don't offer delete for those in use; the service refuses it as a
-  backstop. Merging terms is a separate feature when someone needs it.
-- **The database checks a term belongs to the same owner** as the record using
-  it: a unique constraint on the term table's `(<owner>_id, id)` and a
-  composite foreign key from the record's `(<owner>_id, term_id)`.
+  term and don't offer delete for those in use; the service refuses it, and the
+  record's foreign key to `vocab_term` refuses it in the database. Merging terms
+  is a separate feature when someone needs it.
+- **The service keeps a record's term within its owner's vocabulary.** It looks
+  the term up by the owner's `vocab_id` and id, never by id alone. The
+  database's foreign key only checks that the term exists, so the service is
+  the only writer; a bulk import in SQL runs a check query afterwards.
 - **Changing terms is changing the owner.** Term edits touch the owner's
   `lastUpdated`, so the owner's version moves and an edit form opened earlier
   is refused (see [`edit-form-versions.md`](edit-form-versions.md)).
+- **Filters** list a vocabulary's terms from `vocab_term` and count records by
+  the indexed term column or join table, the same way for every owner.
 
 ## Managing terms on screen
 
