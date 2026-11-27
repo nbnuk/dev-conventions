@@ -43,8 +43,8 @@ with the same statuses, one Stage vocabulary for all occurrences).
 | Record with several single-term fields | property `<field>Term`, column `<field>_vocab_term_id` | `Occurrence.stageTerm` (later) |
 | Record with several terms (tags) | a join table (record id, `vocab_term_id`), indexed on the term | (later) |
 
-The service creates the owner's vocabulary when it first needs one (with the
-owner, or with its first term).
+The service creates the owner's vocabulary with the owner, so an owner that
+has values always has one.
 
 ### Rules
 
