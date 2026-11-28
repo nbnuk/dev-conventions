@@ -4,6 +4,16 @@
 
 Keep interactions server-driven. Use HTMX for partial updates and events, not for rebuilding SPA-style client state.
 
+This applies to every screen and every components-plugin component, and it is the default for a first draft, not a later clean-up:
+
+- **The server renders the data.** Lists, choices, labels and messages come back as HTML from an endpoint. Don't send JSON for the page to build markup from, and don't keep a client-side copy of server data that then has to be kept in sync.
+- **Requests are HTMX attributes.** Use `hx-get` / `hx-post` with `hx-vals` / `hx-include` on the element. Don't use `fetch` and don't script requests.
+- **The server updates the rest of the page.** Use out-of-band swaps (`hx-swap-oob`, which can target every element matching a selector) or `HX-Trigger` events that make other fragments refetch. Don't use custom events that carry data for a script to apply.
+- **Script only for what HTMX can't do:** positioning a popup, moving focus, keyboard handling (arrow keys, Escape) and closing on a click outside. Keep it small, delegated on `document` so swapped-in content works, and free of data.
+- **Wait for settle before using swapped content.** HTMX activates new content at settle, not at swap. A script that shows or focuses swapped-in controls listens for `htmx:afterSettle`. On `htmx:afterSwap`, a quick Enter can submit a form as a normal page load.
+
+Example: the components plugin's single term picker. Its row toggles GET their choices into a shared popup, a pick POSTs and replaces the row, and an out-of-band button redraws every row. Its script only shows, places and closes the popup.
+
 ## Core patterns
 
 ### 1) Form fragment + server validation rerender

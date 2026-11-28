@@ -1,0 +1,17 @@
+---
+description: User-defined sets of values (statuses, tags) are tenant vocabularies (vocab / vocab_term)
+globs: grails-app/domain/**/*.groovy,grails-app/migrations/**/*.groovy
+alwaysApply: false
+---
+
+# Vocabularies
+
+When users define their own set of values for something (statuses on a list, tags), follow **`docs/conventions/vocabularies.md`**:
+
+1. Every vocabulary is a `Vocab` row (table `vocab`: `tenant_id`, `kind` from `VocabKind`, `name`) with `VocabTerm` rows (table `vocab_term`). No per-owner term tables.
+2. Owners point at a vocabulary (`vocab` / `vocab_id`); records point at a term (`term` / `vocab_term_id`, or `<field>Term` / `<field>_vocab_term_id` when a record has several). Terms have `label` (unique per vocab ignoring case), `description`, `sort_order`; records reference the term id.
+3. A term in use cannot be deleted (service check plus the foreign key). The service keeps a record's term within its owner's vocabulary by looking it up by the owner's `vocab_id`; the database does not check that.
+4. Manage terms with the plugin's `<components:termeditor/>` inside the owner's form; validate rows with `TermEditorRow.validate(...)`.
+5. To choose one term while acting on rows (add with a status), use the plugin's single term picker (`<components:singletermpicker/>` once, `<components:singletermpickerAction/>` per row, the host's options endpoint renders `<components:singletermpickerOptions/>`); the pick action finds a typed `termLabel` ignoring case or creates it. Several terms (tags) get a separate multi term picker.
+
+In code say vocabulary and term; on screen use the owner's word ("Statuses").
