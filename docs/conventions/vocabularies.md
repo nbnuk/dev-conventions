@@ -20,7 +20,7 @@ with the same statuses, one Stage vocabulary for all occurrences).
 | `vocab` | `Vocab` | `tenant_id`, `kind`, `name` (+ `id`, `version`, dates) |
 | `vocab_term` | `VocabTerm` | `tenant_id`, `vocab_id`, `label`, `description`, `sort_order` (+ `id`, `version`, dates) |
 
-- `kind` is a `VocabKind` enum value (`SPECIES_LIST_STATUS`, …) saying what the
+- `kind` is a `VocabKind` enum value (`SPECIES_LIST_DESIGNATION_STATUS`, …) saying what the
   vocabulary is for, so a screen offers only vocabularies of its kind. Add a
   kind when a new kind of owner gets user-defined values.
 - `name` is what a person sees when choosing or managing vocabularies. A
